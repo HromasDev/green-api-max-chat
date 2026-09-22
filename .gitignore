@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+*.local
+.vscode/*
+!.vscode/settings.json
+coverage
+src/routeTree.gen.ts
+.env
+.env.local
+*.tsbuildinfo
