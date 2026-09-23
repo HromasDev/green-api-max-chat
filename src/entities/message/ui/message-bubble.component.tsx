@@ -14,17 +14,17 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
     <div className={cn('flex', isOutgoing ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[75%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug shadow-sm',
+          'max-w-[75%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug',
           isOutgoing
-            ? 'rounded-br-sm bg-emerald-600 text-white'
-            : 'rounded-bl-sm bg-white text-slate-900',
+            ? 'rounded-br-sm bg-accent-600 text-white'
+            : 'rounded-bl-sm bg-white text-slate-900 dark:bg-neutral-800 dark:text-neutral-100',
         )}
       >
         <p className="whitespace-pre-wrap break-words">{message.text}</p>
         <div
           className={cn(
             'mt-1 flex items-center justify-end gap-1 text-[11px]',
-            isOutgoing ? 'text-emerald-100' : 'text-slate-400',
+            isOutgoing ? 'text-accent-100' : 'text-slate-400',
           )}
         >
           <span>{formatTime(message.timestamp)}</span>

@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type SubmitEvent, useState } from 'react'
 import type { InstanceCredentials } from '#/shared/api/green-api/types.ts'
 import { Button } from '#/shared/ui/button.tsx'
 import { Input } from '#/shared/ui/input.tsx'
@@ -14,7 +14,7 @@ export function MessageInput({
   const [text, setText] = useState('')
   const sendMessage = useSendMessage(credentials)
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     const trimmed = text.trim()
     if (!trimmed) return
@@ -25,7 +25,7 @@ export function MessageInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="flex gap-2 border-t border-slate-200 bg-white p-3"
+      className="flex gap-2 border-t border-slate-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900"
     >
       <Input
         value={text}

@@ -1,28 +1,33 @@
-import { useEffect, useRef } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { chatTitle, useChatStore } from '#/entities/chat'
-import { MessageBubble } from '#/entities/message/ui/message-bubble.component.tsx'
 import { MessageInput } from '#/features/send-message/ui/message-input.component.tsx'
 import type { InstanceCredentials } from '#/shared/api/green-api/types.ts'
+import { cn } from '#/shared/lib/utils.ts'
+import { MessageList } from './message-list.component.tsx'
+
+const EMPTY_MESSAGES: ReturnType<
+  typeof useChatStore.getState
+>['messagesByChatId'][string] = []
 
 export function ChatWindow({
   credentials,
+  activeOnMobile,
 }: {
   credentials: InstanceCredentials
+  activeOnMobile: boolean
 }) {
   const activeChatId = useChatStore((state) => state.activeChatId)
   const chats = useChatStore((state) => state.chats)
+  const setActiveChat = useChatStore((state) => state.setActiveChat)
   const messages = useChatStore((state) =>
-    activeChatId ? (state.messagesByChatId[activeChatId] ?? []) : [],
+    activeChatId
+      ? (state.messagesByChatId[activeChatId] ?? EMPTY_MESSAGES)
+      : EMPTY_MESSAGES,
   )
-  const bottomRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length])
 
   if (!activeChatId) {
     return (
-      <div className="flex flex-1 items-center justify-center text-slate-400">
+      <div className="hidden flex-1 items-center justify-center bg-slate-100 text-slate-400 md:flex dark:bg-neutral-950">
         Выберите чат или создайте новый
       </div>
     )
@@ -31,24 +36,26 @@ export function ChatWindow({
   const chat = chats.find((item) => item.chatId === activeChatId)
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-100">
-      <div className="border-b border-slate-200 bg-white px-5 py-3.5">
-        <span className="font-medium text-slate-900">
+    <div
+      className={cn(
+        'w-full flex-1 flex-col bg-slate-100 md:flex dark:bg-neutral-950',
+        activeOnMobile ? 'flex' : 'hidden',
+      )}
+    >
+      <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3.5 md:px-5 dark:border-neutral-800 dark:bg-neutral-900">
+        <button
+          type="button"
+          className="cursor-pointer rounded-md p-1.5 text-slate-500 hover:bg-slate-100 md:hidden dark:hover:bg-neutral-800"
+          onClick={() => setActiveChat(null)}
+        >
+          <ArrowLeft className="size-4" />
+        </button>
+        <span className="font-medium text-slate-900 dark:text-neutral-100">
           {chat ? chatTitle(chat) : activeChatId}
         </span>
       </div>
 
-      <div className="flex-1 space-y-2 overflow-y-auto px-5 py-4">
-        {messages.length === 0 && (
-          <p className="text-center text-sm text-slate-400">
-            Сообщений пока нет
-          </p>
-        )}
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
-        <div ref={bottomRef} />
-      </div>
+      <MessageList messages={messages} />
 
       <MessageInput chatId={activeChatId} credentials={credentials} />
     </div>

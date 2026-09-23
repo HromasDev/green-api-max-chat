@@ -9,7 +9,7 @@ interface ChatState {
   activeChatId: string | null
 
   createChat: (chatId: string, phone: string) => void
-  setActiveChat: (chatId: string) => void
+  setActiveChat: (chatId: string | null) => void
   addMessage: (message: ChatMessage) => void
   updateMessageStatus: (
     chatId: string,
@@ -18,12 +18,6 @@ interface ChatState {
   ) => void
 }
 
-/**
- * GREEN-API не отдаёт историю переписки в MAX по REST — только очередь новых
- * уведомлений (technology-http-api). Поэтому вся история — то, что реально
- * прошло через это приложение, — держится и переживает перезагрузку страницы
- * только благодаря persist в localStorage.
- */
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
@@ -47,8 +41,6 @@ export const useChatStore = create<ChatState>()(
       addMessage: (message) =>
         set((state) => {
           const existing = state.messagesByChatId[message.chatId] ?? []
-          // Дедупликация: одно и то же входящее уведомление может прийти
-          // повторно, если deleteNotification не успел отработать вовремя.
           if (existing.some((item) => item.id === message.id)) return state
           return {
             messagesByChatId: {

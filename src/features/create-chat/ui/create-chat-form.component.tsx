@@ -24,7 +24,7 @@ export function CreateChatForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col gap-2 border-b border-slate-200 p-3"
+      className="flex flex-col gap-2 border-b border-slate-200 p-3 dark:border-neutral-800"
     >
       <div className="flex gap-2">
         <Input placeholder="+7 999 123-45-67" {...register('phone')} />

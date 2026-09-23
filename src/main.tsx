@@ -5,6 +5,7 @@ import { RouterProvider } from '@tanstack/react-router'
 import { queryClient } from './app/providers/query-client.ts'
 import { router } from './app/router.tsx'
 import './app/styles.css'
+import '#/shared/lib/theme.store.ts'
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('#root не найден')
