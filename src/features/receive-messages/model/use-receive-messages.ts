@@ -10,15 +10,6 @@ import {
   type InstanceCredentials,
 } from '#/shared/api/green-api/types.ts'
 
-/**
- * technology-http-api: очередь уведомлений вычитывается самим клиентом
- * поллингом, а не пушится сервером. Каждое полученное уведомление обязано
- * быть удалено (deleteNotification) — иначе GREEN-API выдаст его повторно.
- *
- * Не TanStack Query: это не запрос данных на экран, а фоновый бесконечный
- * цикл с side-эффектом (запись в стор) на каждой итерации — обычный эффект
- * подходит лучше, чем натягивание поллинга на кэш запросов.
- */
 export function useReceiveMessages(credentials: InstanceCredentials | null) {
   const addMessage = useChatStore((state) => state.addMessage)
   const createChat = useChatStore((state) => state.createChat)
@@ -37,14 +28,16 @@ export function useReceiveMessages(credentials: InstanceCredentials | null) {
             controller.signal,
           )
 
-          if (!notification) continue
+          if (!notification) {
+            // Страховка от busy-loop: сервер не всегда честно держит receiveTimeout.
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            continue
+          }
 
           const { receiptId, body } = notification
 
           if (isIncomingTextMessage(body)) {
             const chatId = body.senderData.chatId
-            // Входящее сообщение может быть первым касанием с этим номером —
-            // заводим чат в списке, если пользователь ещё не создавал его сам.
             createChat(
               chatId,
               body.senderData.senderName ?? chatId.replace('@c.us', ''),
@@ -62,8 +55,6 @@ export function useReceiveMessages(credentials: InstanceCredentials | null) {
           await deleteNotification(credentials!, receiptId)
         } catch (error) {
           if ((error as { name?: string }).name === 'AbortError') return
-          // Сеть моргнула или GREEN-API временно недоступен — короткая пауза
-          // вместо мгновенного busy-loop запросов в стену.
           await new Promise((resolve) => setTimeout(resolve, 2000))
         }
       }

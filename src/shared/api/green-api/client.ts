@@ -6,11 +6,6 @@ import type {
   SendMessageResponse,
 } from './types.ts'
 
-/**
- * Без SDK green-api: методов задания (SendMessage, receiveNotification,
- * deleteNotification, плюс getStateInstance для проверки учётных данных на
- * логин-форме) четыре, обёртка над fetch тоньше, чем интеграция пакета.
- */
 export class GreenApiError extends Error {
   readonly status: number
 
@@ -48,7 +43,6 @@ async function request<T>(
     throw new GreenApiError(response.status, text || `HTTP ${response.status}`)
   }
 
-  // 204 у deleteNotification/some ответов без тела.
   const text = await response.text()
   return (text ? JSON.parse(text) : undefined) as T
 }
@@ -75,25 +69,19 @@ export function sendMessage(
   })
 }
 
-/**
- * Технология HTTP API: клиент сам вычитывает очередь входящих уведомлений
- * поллингом. Ответ — `null`, если очередь пуста прямо сейчас (не ошибка).
- */
+/** receiveTimeout=60 — максимум для GREEN-API long-polling. */
 export function receiveNotification(
   credentials: InstanceCredentials,
   signal?: AbortSignal,
 ): Promise<ReceiveNotificationResponse | null> {
   return request(
-    instanceUrl(credentials, 'receiveNotification'),
+    `${instanceUrl(credentials, 'receiveNotification')}?receiveTimeout=60`,
     undefined,
     signal,
   )
 }
 
-/**
- * Обязателен после каждой обработки: непрочитанные уведомления не исчезают
- * сами и будут выданы повторно при следующем receiveNotification.
- */
+/** Не удалённое уведомление GREEN-API выдаст повторно следующим receiveNotification. */
 export function deleteNotification(
   credentials: InstanceCredentials,
   receiptId: number,
