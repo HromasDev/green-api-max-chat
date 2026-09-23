@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { useInstanceStore } from '#/entities/instance'
 import { Button } from '#/shared/ui/button.tsx'
@@ -9,6 +10,7 @@ import { useLogin } from '../model/use-login.ts'
 export function LoginForm() {
   const setCredentials = useInstanceStore((state) => state.setCredentials)
   const login = useLogin()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -18,7 +20,10 @@ export function LoginForm() {
 
   const onSubmit = handleSubmit((values) => {
     login.mutate(values, {
-      onSuccess: (credentials) => setCredentials(credentials),
+      onSuccess: (credentials) => {
+        setCredentials(credentials)
+        navigate({ to: '/chat' })
+      },
     })
   })
 
@@ -27,7 +32,7 @@ export function LoginForm() {
       <div className="flex flex-col gap-1.5">
         <label
           htmlFor="idInstance"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-slate-700 dark:text-neutral-300"
         >
           idInstance
         </label>
@@ -44,7 +49,7 @@ export function LoginForm() {
       <div className="flex flex-col gap-1.5">
         <label
           htmlFor="apiTokenInstance"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-slate-700 dark:text-neutral-300"
         >
           apiTokenInstance
         </label>
