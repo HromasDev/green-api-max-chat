@@ -17,22 +17,6 @@ pnpm dev          # http://localhost:3000
 ввести свои `idInstance` и `apiTokenInstance` из личного кабинета GREEN-API (инстанс должен быть
 авторизован в MAX — залогинен по QR).
 
-### Проверка через Telegram-бота (без привязки личного аккаунта)
-
-Авторизация MAX/WhatsApp через QR отдаёт GREEN-API сессию личного аккаунта — не всем удобно так
-проверять тестовое. Безопасная альтернатива, разрешённая заданием: канал Telegram, авторизуемый
-токеном бота, а не QR личного аккаунта.
-
-1. В Telegram создать бота через `@BotFather` (`/newbot`) — получить токен.
-2. В **https://console.green-api.com** создать инстанс с каналом Telegram и привязать его к токену
-   бота (без сканирования QR).
-3. Взять `idInstance`/`apiTokenInstance` этого инстанса — войти ими в приложение.
-4. С другого Telegram-аккаунта написать боту любое сообщение первым (боты не могут писать первыми
-   тем, кто с ними ещё не общался) — чат появится в списке слева сам.
-5. Дальше — обычная переписка через интерфейс.
-
-Подробности сценария и связанные допущения — в [`docs/TASK.md`](docs/TASK.md#как-проверялось).
-
 ```bash
 pnpm build && pnpm preview   # прод-сборка
 pnpm test                    # vitest
@@ -52,10 +36,15 @@ staged-файлам, pre-push — весь тестовый прогон. Те �
 4. Ответ получателя из MAX появится в чате сам: приложение постоянно вычитывает очередь
    уведомлений GREEN-API (`receiveNotification`) и удаляет обработанные (`deleteNotification`).
 
+Интерфейс адаптивен: на узких экранах сайдбар и окно переписки переключаются вместо сжатия.
+Ширина сайдбара регулируется перетаскиванием на десктопе. Тема (светлая/тёмная) переключается
+кнопкой в шапке и сохраняется между визитами.
+
 ## Стек
 
 React 19 · TypeScript · Vite · TanStack Router · TanStack Query · React Hook Form + Zod ·
-Zustand (persist в localStorage) · Feature-Sliced Design · Tailwind v4 · oxlint · prettier ·
+Zustand (persist в localStorage) · Feature-Sliced Design · Tailwind v4 ·
+TanStack Virtual (виртуализация списка сообщений) · lucide-react · oxlint · prettier ·
 lefthook · vitest
 
 ## Архитектура
