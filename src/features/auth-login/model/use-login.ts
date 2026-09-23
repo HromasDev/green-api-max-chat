@@ -5,11 +5,6 @@ import {
 } from '#/shared/api/green-api/client.ts'
 import type { InstanceCredentials } from '#/shared/api/green-api/types.ts'
 
-/**
- * Логин здесь не «вход в аккаунт» (GREEN-API stateless и не выдаёт сессий) —
- * это проверка, что idInstance/apiTokenInstance вообще валидны и инстанс
- * авторизован в MAX, прежде чем пускать пользователя в чат.
- */
 export function useLogin() {
   return useMutation({
     mutationFn: async (credentials: InstanceCredentials) => {

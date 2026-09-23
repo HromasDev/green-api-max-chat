@@ -8,11 +8,6 @@ interface InstanceState {
   logout: () => void
 }
 
-/**
- * idInstance/apiTokenInstance живут только в localStorage браузера
- * пользователя — сервера-бэкенда в задании нет, а хранить учётные данные
- * GREEN-API где-то нужно, чтобы не вводить их при каждом обновлении страницы.
- */
 export const useInstanceStore = create<InstanceState>()(
   persist(
     (set) => ({
