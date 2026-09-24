@@ -5,6 +5,7 @@ import RouteNotFound from './ui/route-not-found.component.tsx'
 
 export const router = createRouter({
   routeTree,
+  basepath: import.meta.env.BASE_URL,
   defaultPreload: 'intent',
   defaultErrorComponent: RouteError,
   defaultNotFoundComponent: RouteNotFound,
